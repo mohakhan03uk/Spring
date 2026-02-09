@@ -95,8 +95,9 @@ public class Car {
     private Engine engine;
 }
 ```
-
 **Notes:**
+- The Stereotype annotation @Component instruct Spring to create and and a bean to Spring Context of this class: Car
+- With @Autowired  instruct Spring to provide a bean from its context and set it directly as the value of the field `engine`. **This way we establish a relationship between the two beans**
 - Common in demos and quick examples
 - Not recommended for production code
 - Harder to test and violates immutability
