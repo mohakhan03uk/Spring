@@ -201,3 +201,89 @@ Explanation:
     // Java lets you omit value = when only one attribute is set
     // Spring treats name and value the same internally
 ```
+---
+### Primary Bean
+- A primary bean is the one Spring will choose if it has multiple options and you don’t specify a name; the primary bean is simply Spring’s default choice.
+- In other words: @Primary resolves ambiguity when Spring performs type-based injection and finds more than one matching bean.
+Without `@Primary` (or `@Qualifier`), Spring throws a `NoUniqueBeanDefinitionException`.
+
+---
+
+#### Example: Multiple beans with one primary
+
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    @Primary
+    public PaymentService creditCardPaymentService() {
+        return new CreditCardPaymentService();
+    }
+
+    @Bean
+    public PaymentService paypalPaymentService() {
+        return new PaypalPaymentService();
+    }
+}
+```
+
+#### Explanation
+
+- Two beans of type `PaymentService` exist in the Spring context
+- One of them is marked with `@Primary`
+- Spring uses the primary bean as the default choice
+
+---
+
+#### Injection without specifying a bean name
+
+```java
+@Autowired
+private PaymentService paymentService;
+```
+
+Spring injects `creditCardPaymentService` because it is marked as primary.
+
+---
+
+#### Injection with @Qualifier overrides @Primary
+
+```java
+@Autowired
+@Qualifier("paypalPaymentService")
+private PaymentService paymentService;
+```
+
+Spring injects `paypalPaymentService`, even though it is not primary.
+
+**Rule:** `@Qualifier` always wins over `@Primary`.
+
+---
+
+#### Using @Primary with stereotype annotations
+
+```java
+@Service
+@Primary
+public class CreditCardPaymentService implements PaymentService {
+}
+```
+
+```java
+@Service
+public class PaypalPaymentService implements PaymentService {
+}
+```
+
+This behaves the same as using `@Primary` with `@Bean`, but requires less configuration code.
+
+---
+
+#### Key Takeaways
+
+- Use `@Primary` when multiple beans of the same type exist
+- The primary bean becomes Spring’s default choice
+- `@Primary` works with `@Bean` and stereotype annotations
+- `@Qualifier` overrides `@Primary`
+- Without either, Spring fails with a bean ambiguity error
