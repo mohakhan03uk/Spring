@@ -214,76 +214,43 @@ Without `@Primary` (or `@Qualifier`), Spring throws a `NoUniqueBeanDefinitionExc
 ```java
 @Configuration
 public class AppConfig {
-
-    @Bean
-    @Primary
-    public PaymentService creditCardPaymentService() {
-        return new CreditCardPaymentService();
-    }
-
-    @Bean
-    public PaymentService paypalPaymentService() {
-        return new PaypalPaymentService();
-    }
+   @Configuration
+   public class AppConfig {
+     @Bean
+     @Primary
+     public MyClass myClass_1(){
+          return new MyClass();
+     }
+     @Bean(name = "myClass_xyz")
+     public MyClass myClass_2(){
+         return new MyClass();
+     }
+   }
 }
 ```
-
+```java
+  public class Main {
+      public static void main(String[] args) {
+      var context = new AnnotationConfigApplicationContext(AppCnfig.class);
+  
+      String s = context.getBean(String.class);
+      System.out.println(s);
+  
+      MyClass myClass = context.getBean(MyClass.class);
+      doXYZ(myXlass);
+    }
+  }
+```
 #### Explanation
-
-- Two beans of type `PaymentService` exist in the Spring context
+- Two beans of type `MyClass` exist in the Spring context
 - One of them is marked with `@Primary`
 - Spring uses the primary bean as the default choice
+- myClass will have object of Bean myClass_1
 
 ---
-
-#### Injection without specifying a bean name
-
-```java
-@Autowired
-private PaymentService paymentService;
-```
-
-Spring injects `creditCardPaymentService` because it is marked as primary.
-
----
-
-#### Injection with @Qualifier overrides @Primary
-
-```java
-@Autowired
-@Qualifier("paypalPaymentService")
-private PaymentService paymentService;
-```
-
-Spring injects `paypalPaymentService`, even though it is not primary.
-
-**Rule:** `@Qualifier` always wins over `@Primary`.
-
----
-
-#### Using @Primary with stereotype annotations
-
-```java
-@Service
-@Primary
-public class CreditCardPaymentService implements PaymentService {
-}
-```
-
-```java
-@Service
-public class PaypalPaymentService implements PaymentService {
-}
-```
-
-This behaves the same as using `@Primary` with `@Bean`, but requires less configuration code.
-
----
-
+    
 #### Key Takeaways
-
 - Use `@Primary` when multiple beans of the same type exist
 - The primary bean becomes Spring’s default choice
 - `@Primary` works with `@Bean` and stereotype annotations
-- `@Qualifier` overrides `@Primary`
-- Without either, Spring fails with a bean ambiguity error
+- Without it, Spring fails with a bean ambiguity error
