@@ -98,10 +98,20 @@ public class Car {
 **Notes:**
 - The Stereotype annotation @Component instruct Spring to create and and a bean to Spring Context of this class: Car
 - With @Autowired  instruct Spring to provide a bean from its context and set it directly as the value of the field `engine`. **This way we establish a relationship between the two beans**
+- @Autowired annotation to tell Spring we want to inject a value there from its context.
 - Common in demos and quick examples
 - Not recommended for production code
 - Harder to test and violates immutability
 
+##### Component scanning must be enabled (this is mandatory)
+- @Component only marks a class as a candidate.
+- Spring will only create the bean if it scans that package.
+```java
+    @Configuration
+    @ComponentScan(basePackages = "com.example.app")
+    public class AppConfig {
+    }
+```
 ---
 
 #### b. Constructor Injection (Recommended)
