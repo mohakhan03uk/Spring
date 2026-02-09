@@ -11,14 +11,14 @@ You can add beans to the Spring context in three ways: using the @Bean annotatio
 
 A supporting mechanism is **@ComponentScan**, which tells Spring where to look for classes annotated with stereotype annotations. Without component scanning, stereotype annotations alone are not enough.
 
-Using the @Bean annotation to add instances to the Spring context enables you to add any kind of object instance as a bean and even multiple instances of the same kind to the Spring context. From this point of view, this approach is more flexible  than using stereotype annotations. Still, it requires you to write more code because you need to write a separate method in the configuration class for each independent instance added to the context.
+Using the **@Bean** annotation to add instances to the Spring context enables you to add any kind of object instance as a bean and even multiple instances of the same kind to the Spring context. From this point of view, this approach is more flexible  than using stereotype annotations. Still, it requires you to write more code because you need to write a separate method in the configuration class for each independent instance added to the context.
 
 This approach is especially useful for:
 - Third-party classes you cannot annotate
 - Creating multiple beans of the same type with different configurations
 - Applying custom initialization logic
 
-Using stereotype annotations, you can create beans for only the application classes  with a specific annotation (e.g., @Component). This configuration approach  requires writing less code, which makes your configuration more comfortable to  read. 
+Using **stereotype** annotations, you can create beans for only the application classes  with a specific annotation (e.g., @Component). This configuration approach  requires writing less code, which makes your configuration more comfortable to  read. 
 You’ll prefer this approach over the @Bean annotation for classes that you  define and can annotate.
 
 Common stereotype annotations include:
@@ -29,9 +29,7 @@ Common stereotype annotations include:
 
 These annotations work only when **@ComponentScan** is enabled, either explicitly or implicitly (for example, via @SpringBootApplication).
 
-Using the registerBean() method enables you to implement custom logic for  
-adding beans to the Spring context. Remember, you can use this approach only  
-with Spring 5 and later.
+Using the **registerBean()** method enables you to implement custom logic for adding beans to the Spring context. Remember, you can use this approach only with Spring 5 and later.
 
 This programmatic approach is useful when:
 - Bean creation depends on runtime conditions
@@ -148,25 +146,58 @@ Explanation:
   }
   ```
 
-```java
-  public class Main {
-      public static void main(String[] args) {
-      var context = new AnnotationConfigApplicationContext(AppCnfig.class);
-  
-      String s = context.getBean(String.class);
-      System.out.println(s);
-  
-      MyClass myClass = context.getBean(MyClass.class);
-      doXYZ(myXlass);
-    }
-  }
-```
+    ```java
+      public class Main {
+          public static void main(String[] args) {
+          var context = new AnnotationConfigApplicationContext(AppCnfig.class);
+      
+          String s = context.getBean(String.class);
+          System.out.println(s);
+      
+          MyClass myClass = context.getBean(MyClass.class);
+          doXYZ(myXlass);
+        }
+      }
+    ```
 
-- You’ll get an exception on this line because Spring cannot guess which of the 2 MyClass instances you refer to.
+  - You will get an exception on this line because Spring cannot guess which of the 2 MyClass instances you refer to.
+  
   ```java
       Exception in thread "main" org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type
       'main.MyClass' available: expected single matching bean but found 2:
       myClass_1, myClass_2
       at ...
   ```
-
+- Right way :
+   - using Beans name
+     ```java
+      MyClass myClass_1 = context.getBean("myClass_1", MyClass.class);
+      MyClass myClass_2 = context.getBean("myClass_xyz", MyClass.class);
+     ```
+     ```java
+       @Configuration
+       public class AppConfig {
+         @Bean
+         public MyClass myClass_1(){
+              return new MyClass();
+         }
+         @Bean(name = "myClass_xyz")
+         public MyClass myClass_2(){
+             return new MyClass();
+         }
+       }
+     ```
+- @Bean : “Take the object returned by this method and put it into the Spring context as a bean.”
+- @Bean(name = "xyz")  : name is an explicit attribute
+- @Bean(value = "xyz") : value is an alias for name  : Slightly less explicit : Used sometimes for consistency with other annotations
+- @Bean("xyz") : This uses Java’s single-attribute shortcut  : value is the default attribute :  Most concise form
+- Multiple bean names (aliases) : @Bean(name = {"xyz", "primaryxyz"})  : or : @Bean({"xyz", "primaryxyz"})
+```java
+     public @interface Bean {
+        String[] name() default {};
+        String[] value() default {};
+    }
+     // value is the default attribute
+    // Java lets you omit value = when only one attribute is set
+    // Spring treats name and value the same internally
+```
