@@ -34,8 +34,9 @@ public class AppConfig {
 }
 ```
 
-**Key point:** Even though `engine()` is called explicitly, Spring intercepts the call and provides the singleton instance from the context.
-
+**Key point:**
+- Even though `engine()` is called explicitly, Spring intercepts the call and provides the singleton instance from the context.
+- If the engine bean already exists in the context, then instead of calling the engine() method, Spring will directly take the instance from its context. If the engine bean does not yet exist in the context, Spring calls the engine() method and returns the bean.
 ---
 
 ### 2. Method Parameters in `@Bean`
@@ -64,7 +65,16 @@ public class AppConfig {
 - Cleaner code
 - No tight coupling between configuration methods
 - Easier to test and refactor
+#### Without IoC 
+- The application executes and controls(uses) the dependencies it needs.
 
+#### With IoC
+- The application executes being controlled by the framework(dependency)
+
+> - **Inversion of Control (IoC)** means the framework controls the application flow and object lifecycle.\
+> - **Dependency Injection (DI)** is the mechanism by which the framework supplies required dependencies to the application. \
+> - **Dependency Injection (DI)** is a technique in which the framework supplies a value to a specific field, constructor parameter, or method parameter. In this scenario, Spring provides the required value to the parameter of the car() method when invoking it, thereby resolving the dependency needed by that method. DI is a concrete implementation of the Inversion of Control (IoC) principle, and IoC means that the framework governs the application’s behavior during execution.\
+> - An application that does not apply the IoC principle manages its own execution flow and directly creates or uses its dependencies. In contrast, an application that follows the IoC principle hands over this control to a dependency, typically a framework. Dependency Injection is one such form of control inversion, where the framework itself injects values into the application’s objects, such as assigning a dependency to a field of an application class.
 ---
 
 ### 3. Using `@Autowired`
