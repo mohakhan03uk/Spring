@@ -96,8 +96,8 @@ public class Car {
 }
 ```
 **Notes:**
-- The Stereotype annotation @Component instruct Spring to create and and a bean to Spring Context of this class: Car
-- With @Autowired  instruct Spring to provide a bean from its context and set it directly as the value of the field `engine`. **This way we establish a relationship between the two beans**
+- The Stereotype annotation @Component instruct Spring to create a bean to Spring Context of this class: Car
+- With @Autowired we instruct Spring to provide a bean from its context and set it directly as the value of the field `engine`. **This way we establish a relationship/wiring between the two beans**
 - @Autowired annotation to tell Spring we want to inject a value there from its context.
 - Common in demos and quick examples
 - Not recommended for production code
@@ -105,7 +105,7 @@ public class Car {
 
 ##### Component scanning must be enabled (this is mandatory)
 - @Component only marks a class as a candidate.
-- Spring will only create the bean if it scans that package.
+- Spring will only create the bean if it scans that package. hence @ComponentScan is needed
 ```java
     @Configuration
     @ComponentScan(basePackages = "com.example.app")
@@ -201,8 +201,12 @@ class B {
     A a;
 }
 ```
-
 ❌ Spring cannot resolve this and throws an exception during startup.
+```java
+BeanCurrentlyInCreationException: Error creating bean with name 'b':
+Requested bean is currently in creation: Is there an unresolvable circular reference?
+```
+
 
 **Rule:** Always design beans to avoid circular dependencies.
 
