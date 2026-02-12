@@ -165,3 +165,15 @@ Harder maintenance, poor testability, low flexibility, higher regression risk.
 
 ## 10. How would you refactor tightly coupled code?
 Introduce an interface, move implementation logic to a class, and inject the abstraction using constructor injection.
+
+# Memories
+> “I usually default to interface-based design with constructor injection, and only introduce qualifiers when behavior needs to differ explicitly.”\
+> Spring injects by type first, then by qualifier/name if needed.\
+> Using @Component for Everything Loses semantic meaning , Instead use `@Service` and `@Repository` as required.\
+> “In Spring-based applications, we strongly prefer decoupling implementations using abstractions, typically Java interfaces.\
+The idea is that a class should depend on what another class does, not how it does it. This makes the system easier to change, extend, and test.\
+> In Java, interfaces act as contracts. When a service depends on an interface, it doesn’t care which concrete implementation it gets. Spring’s dependency injection container is responsible for finding a suitable implementation and injecting it at runtime.\
+> Spring creates beans only for concrete classes, which are marked using stereotype annotations like @Service, @Repository, or @Component. We never annotate interfaces because they don’t represent instantiable objects.\
+> If there is only one implementation of an interface, Spring injects it automatically. However, if multiple implementations exist, Spring needs guidance. We can either mark one implementation as the default using @Primary, or explicitly select one using @Qualifier.\
+> Using specialized stereotypes like @Service and @Repository improves readability and clearly communicates responsibility, which is important in large codebases.\
+> Overall, this approach results in loosely coupled, maintainable, and testable applications — which is why it’s a core design principle in Spring.”
