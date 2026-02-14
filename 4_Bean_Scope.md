@@ -249,3 +249,83 @@ lifecycle-managed.
 -   Avoid mixing scopes without proper provider mechanism
 
 ------------------------------------------------------------------------
+
+# 🔥 Why Prototype Beans Are Not Destroyed Automatically
+
+## For singleton beans, Spring:
+1. Creates bean
+2. Manages full lifecycle
+3. Calls @PreDestroy when context shuts down
+
+## For prototype beans, Spring:
+1. Creates bean
+2. Injects dependencies
+3. Calls initialization methods
+4. Returns it to caller
+5. ❌ Stops managing it
+6. Spring does not track prototype instances after creation.
+
+# How to Destroy Prototype Beans Properly
+There are several approaches depending on your design.
+1. Manual Destruction (Most Common)
+   - If your prototype bean holds resources like below then You must close them manually:
+      - File handles
+      - DB connections
+      - Sockets
+      - Threads
+  - Example :
+    ```java
+        @Component
+        @Scope("prototype")
+        public class ReportGenerator implements AutoCloseable {
+        
+            public void generate() {
+                System.out.println("Generating report...");
+            }
+        
+            @Override
+            public void close() {
+                System.out.println("Cleaning resources...");
+            }
+        }
+    ```
+    ```java
+        ReportGenerator generator = context.getBean(ReportGenerator.class);
+        try {
+            generator.generate();
+        } finally {
+            generator.close();   // YOU must call this
+        }
+    ```
+    > Recommended for resource-heavy beans.
+2. Use Custom Destroy Method (But Manual Trigger)
+   - But still — Spring won’t call cleanup() automatically.
+   - You must call it manually.
+   ```java
+     @Bean(destroyMethod = "cleanup")
+    @Scope("prototype")
+    public ReportGenerator reportGenerator() {
+        return new ReportGenerator();
+    }
+   ```
+3. Using DisposableBeanAdapter (Advanced)
+   - If you REALLY want Spring to handle destruction of prototype beans:
+     - You must manually register them for destruction.
+     - Example approach:
+       ```java
+         ConfigurableBeanFactory factory = (ConfigurableBeanFactory) context.getBeanFactory();
+         factory.destroyBean(generator);
+       ```
+       > This explicitly tells Spring: “Please destroy this prototype instance” This is advanced and rarely needed.
+4. Using Custom Scope That Tracks Destruction
+- In web applications:
+- Spring provides additional scopes:
+   - request
+   - session
+   - application
+- In those scopes, Spring DOES manage destruction.
+- Example:
+```java @Scope(value = WebApplicationContext.SCOPE_REQUEST)```
+- In that case: 
+  - Bean lives for HTTP request
+  - Spring destroys it at request completion
