@@ -54,11 +54,11 @@ sequenceDiagram
     participant T as Target Bean
 
     C->>P: call targetMethod(args)
-    Note over P: Evaluate pointcuts and advice chain</b> (e.g., Before/After/Around)
-    P->>P: Around advice (pre)</b> + Before advice
+    Note over P: Evaluate pointcuts and advice chain (e.g., Before/After/Around)
+    P->>P: Around advice (pre) + Before advice
     P->>T: invoke targetMethod(args)
     T-->>P: return result or throw exception
-    P->>P: AfterReturning or AfterThrowing</b> + Around advice (post)
+    P->>P: AfterReturning or AfterThrowing + Around advice (post)
     P-->>C: return result (or propagate exception)
 ```
 
@@ -76,23 +76,43 @@ sequenceDiagram
 **Configuration**
 ```java
 @Configuration
+@ComponentScan(basePackages = "com.example.demo.service")
 @EnableAspectJAutoProxy
-public class AopConfig { }
+public class ProjectConfig {
+
+    @Bean
+    public LoggingAspect logginAspect(){
+        return new LoggingAspect();
+    }
+}
 ```
 
 **Business Service**
 ```java
 @Service
-public class PaymentService {
-    public String charge(String orderId, int amountCents) {
-        // business logic
-        return "TXN-" + orderId;
+public class CommentService {
+    //private Logger logger = Logger.getLogger(CommentService.class.getName());
+    public void publishComment(Comment comment) {
+        //logger.info("Publishing comment:" + comment.getText());
+        System.out.println("Publishing comment:" + comment.getText());
     }
 }
 ```
 
 **Aspect (Logging + Timing)**
 ```java
+    @Aspect
+    public class LoggingAspect {
+        @Around("execution(* com.example.demo.service.*.*(..))")
+        public void log(ProceedingJoinPoint joinPoint) throws Throwable {
+            System.out.println("Aspect got called. Before");
+            joinPoint.proceed();
+            System.out.println("Aspect got called. After");
+        }
+    }
+```
+```java
+// Still need to read more to understand it.
 @Aspect
 @Component
 public class LoggingAspect {
