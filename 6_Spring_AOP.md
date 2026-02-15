@@ -111,6 +111,12 @@ public class CommentService {
         }
     }
 ```
+
+#### What a @Pointcut method is
+- The method (anyServicePublicMethod) has no body and returns void.
+- It names a pointcut expression so you can reuse it in advice annotations like @Before("anyServicePublicMethod()"), @Around("anyServicePublicMethod()"), etc.
+- The string inside @Pointcut(...) is an AspectJ pointcut expression (Spring uses AspectJ’s expression language for matching).
+
 ```java
 // Still need to read more to understand it.
 @Aspect
