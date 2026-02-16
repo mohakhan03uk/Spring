@@ -30,7 +30,7 @@ graph LR
     %% Styling
     style B fill:#f9f,stroke:#333,stroke-width:2px
     style D fill:#bbf,stroke:#333,stroke-width:2px
-    style Spring_Application_Context fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+    style Spring_Application_Context fill:#f5f5f,stroke:#666,stroke-dasharray: 5 5
 ```
 
 ### 1. Request Initiation
