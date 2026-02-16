@@ -48,6 +48,7 @@ The DispatcherServlet dispatches the request to the identified Controller.
 The Controller executes the business logic.
 
 It returns a ModelAndView object (containing the data model and the logical view name).
+The Controller returns the view name that the dispatcher servlet needs to find and rnder into the HTTP response.
 
 ### 5. View Resolution
 The ViewResolver takes the logical view name (e.g., "dashboard") and resolves it to a physical resource (e.g., /WEB-INF/views/dashboard.jsp or a Thymeleaf template).
@@ -57,6 +58,9 @@ The DispatcherServlet renders the view by merging the model data with the templa
 
 ### 7. Client Presentation
 The browser receives the response and renders the HTML/JSON data for the user.
+
+> In addtion to returning the view name, we want to send data from controller to the view, whihc will be displayed byt hte view. This way, the same view might display different data for each request.
+
 
 ## 📝 Summary: Why Spring Boot?
 In the modern era, web applications have largely superseded desktop software. A web application operates on a Client-Server model where the frontend (browser) sends requests and the backend (Java/Spring) processes data and responds.
